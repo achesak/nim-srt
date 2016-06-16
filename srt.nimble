@@ -6,4 +6,4 @@ description = "Nim module for parsing SRT (SubRip) subtitle files"
 license = "MIT"
 
 [Deps]
-Requires: "nim >= 0.10"
+Requires: "nim >= 0.13"

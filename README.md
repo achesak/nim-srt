@@ -1,4 +1,5 @@
----- About ----
+About
+=====
 
 nim-srt is a Nim module for parsing SRT (SubRip) subtitle files.
 
@@ -17,8 +18,6 @@ and contains the following data::
 
 Examples:
 
-.. code-block:: nimrod
-    
     # Parse the data.
     var srt : SRTData = readSRT("example.srt")
     # The previous line could also have been done the following ways:
@@ -45,6 +44,7 @@ Examples:
     echo("X1: " & srt.subtitles[0].coordinates.x1) # Output: "X1: 100"
     echo("Y1: " & srt.subtitles[0].coordinates.y1) # Output: "Y1: 100"
 
----- License ----
+License
+=======
 
 nim-srt is released under the MIT open source license.
