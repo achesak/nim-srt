@@ -55,12 +55,10 @@ import strutils
 
 
 type
-    SRTData* = ref SRTDataInternal
-    SRTDataInternal* = object
+    SRTData* = ref object
         subtitles*: seq[SRTSubtitle]
     
-    SRTSubtitle* = ref SRTSubtitleInternal
-    SRTSubtitleInternal* = object
+    SRTSubtitle* = ref object
         number* : int
         startTime* : TimeInterval
         endTime* : TimeInterval
@@ -69,8 +67,7 @@ type
         coordinates* : SRTCoordinates
         text* : string
     
-    SRTCoordinates* = ref SRTCoordinatesInternal
-    SRTCoordinatesInternal* = object
+    SRTCoordinates* = ref object
         x1* : string
         y1* : string
         x2* : string
