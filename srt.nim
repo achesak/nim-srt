@@ -88,9 +88,9 @@ proc parseSRT*(srtData : string): SRTData =
         sub.startTimeString = lines[1][0..11]
         sub.endTimeString = lines[1][17..28]
         
-        sub.startTime = initInterval(milliseconds = parseInt(sub.startTimeString[9..11]), seconds = parseInt(sub.startTimeString[6..7]),
+        sub.startTime = initTimeInterval(milliseconds = parseInt(sub.startTimeString[9..11]), seconds = parseInt(sub.startTimeString[6..7]),
                                      minutes = parseInt(sub.startTimeString[3..4]), hours = parseInt(sub.startTimeString[0..1]))
-        sub.endTime = initInterval(milliseconds = parseInt(sub.endTimeString[9..11]), seconds = parseInt(sub.endTimeString[6..7]),
+        sub.endTime = initTimeInterval(milliseconds = parseInt(sub.endTimeString[9..11]), seconds = parseInt(sub.endTimeString[6..7]),
                                      minutes = parseInt(sub.endTimeString[3..4]), hours = parseInt(sub.endTimeString[0..1]))
         
         var coords : SRTCoordinates = SRTCoordinates()
