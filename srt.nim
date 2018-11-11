@@ -159,4 +159,20 @@ proc formatTime(t: TimeInterval): string =
     ## Returns string of the time in `HH:mm:ss:fff` format
     result = fmt"{t.hours:0>2.0}:{t.minutes:0>2.0}:{t.seconds:0>2.0},{t.milliseconds:0>3.0}"
 
+proc `$`*(s: SRTData): string=
+    ## Outputs the full SRT file to its intended format
+    result=""
+    var number,index = 0
+    for subtitle in s.subtitles:
+        inc index
+        if subtitle.text == "":
+            continue
+        inc number
+        result.add(&"{number}\n")
+        result.add(fmt"{formatTime(subtitle.startTime)} --> {formatTime(subtitle.endTime)}")
+        if hasCoords(subtitle.coordinates):
+            result.add(fmt" {subtitle.coordinates}")
+        result.add(&"\n{subtitle.text}\n")
+        if index != s.subtitles.len:
+            result.add("\n")
 
