@@ -65,8 +65,6 @@ type
         number* : int
         startTime* : TimeInterval
         endTime* : TimeInterval
-        startTimeString* : string
-        endTimeString* : string
         coordinates* : SRTCoordinates
         text* : string
     
@@ -75,6 +73,19 @@ type
         y1* : int
         x2* : int
         y2* : int
+
+proc parseTimes(s:string): tuple[startTime:TimeInterval, endTime:TimeInterval] =
+    ## Parses time hh:mm:ss,uuu --> hh:mm:ss,uuuinto (TimeInterval,TimeInterval)
+    var i = 0
+    var sh,sm,ss,su,eh,em,es,eu: int
+    if scanf(s,"$i:$i:$i,$i --> $i:$i:$i,$i",sh,sm,ss,su,eh,em,es,eu):
+        return (
+            startTime: initTimeInterval(milliseconds = su, seconds = ss, minutes = sm, hours = sh),
+              endTime: initTimeInterval(milliseconds = eu, seconds = es, minutes = em, hours = eh))
+    return (
+        startTime: initTimeInterval(milliseconds = 0, seconds = 0, minutes = 0, hours = 0),
+          endTime: initTimeInterval(milliseconds = 0, seconds = 0, minutes = 0, hours = 0))
+
 proc parseCoords(s:string): SRTCoordinates =
     ## Parses X1:<int> X2:<int> Y1:<int> Y2:<int> into SRTCoordinates
     result = SRTCoordinates()
@@ -113,14 +124,7 @@ proc parseSRT*(srtData : string): SRTData =
             continue
 
         sub.number = parseInt(number)
-        sub.startTimeString = lines[1][0..11]
-        sub.endTimeString = lines[1][17..28]
-        
-        sub.startTime = initTimeInterval(milliseconds = parseInt(sub.startTimeString[9..11]), seconds = parseInt(sub.startTimeString[6..7]),
-                                     minutes = parseInt(sub.startTimeString[3..4]), hours = parseInt(sub.startTimeString[0..1]))
-        sub.endTime = initTimeInterval(milliseconds = parseInt(sub.endTimeString[9..11]), seconds = parseInt(sub.endTimeString[6..7]),
-                                     minutes = parseInt(sub.endTimeString[3..4]), hours = parseInt(sub.endTimeString[0..1]))
-        
+        (sub.startTime, sub.endTime)  = parseTimes(lines[1])
         sub.coordinates = parseCoords(lines[1])
         
         sub.text = lines[2..high(lines)].join("\n")
@@ -150,5 +154,9 @@ proc hasCoords(c: SRTCoordinates): bool =
 proc `$`*(c: SRTCoordinates): string =
     ## Returns string of coordinates
     result = fmt"X1:{c.x1} X2:{c.x2} Y1:{c.y1} Y2:{c.y2}"
+
+proc formatTime(t: TimeInterval): string =
+    ## Returns string of the time in `HH:mm:ss:fff` format
+    result = fmt"{t.hours:0>2.0}:{t.minutes:0>2.0}:{t.seconds:0>2.0},{t.milliseconds:0>3.0}"
 
 
