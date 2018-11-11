@@ -91,11 +91,28 @@ proc parseSRT*(srtData : string): SRTData =
     var data : seq[string] = srtData.replace("\r\n", "\n").replace("\r", "\n").strip(leading = true, trailing = true).split("\n\n")
     var srt : SRTData = SRTData(subtitles: @[])
     
+    var index = 0
     for i in data:
+        inc index
         var sub : SRTSubtitle = SRTSubtitle()
         var lines : seq[string] = i.strip(leading = true, trailing = true).split("\n")
         
-        sub.number = parseInt(lines[0])
+        var offset = 0
+        if index == 1: # The first line may contain BOM marks which should be skipped when parsing the integer
+            offset = find(lines[0],{'0','1','2','3','4','5','6','7','8','9'})
+        var number:string = lines[0][offset..^1]
+        if not number.isDigit():
+            # lets assume the content belongs to previous line
+            if index == 1: # if this is the first line there is no previous line to append to
+                continue
+            let last = srt.subtitles.len-1 # if the last text entry is empty there is no need to prepend a newline
+            if srt.subtitles[last].text == "":
+                srt.subtitles[last].text = lines.join("\n")
+            else:
+                srt.subtitles[last].text = (srt.subtitles[last].text & "\n" & lines.join("\n"))
+            continue
+
+        sub.number = parseInt(number)
         sub.startTimeString = lines[1][0..11]
         sub.endTimeString = lines[1][17..28]
         
