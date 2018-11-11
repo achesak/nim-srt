@@ -76,7 +76,6 @@ type
 
 proc parseTimes(s:string): tuple[startTime:TimeInterval, endTime:TimeInterval] =
     ## Parses time hh:mm:ss,uuu --> hh:mm:ss,uuuinto (TimeInterval,TimeInterval)
-    var i = 0
     var sh,sm,ss,su,eh,em,es,eu: int
     if scanf(s,"$i:$i:$i,$i --> $i:$i:$i,$i",sh,sm,ss,su,eh,em,es,eu):
         return (
