@@ -52,6 +52,9 @@
 
 import times
 import strutils
+import parseutils
+import strformat
+import strscans
 
 
 type
@@ -68,10 +71,18 @@ type
         text* : string
     
     SRTCoordinates* = ref object
-        x1* : string
-        y1* : string
-        x2* : string
-        y2* : string
+        x1* : int
+        y1* : int
+        x2* : int
+        y2* : int
+proc parseCoords(s:string): SRTCoordinates =
+    ## Parses X1:<int> X2:<int> Y1:<int> Y2:<int> into SRTCoordinates
+    result = SRTCoordinates()
+    let start = find(s," X1:")
+    if start >= 0 and scanf(s[start..^1]," X1:$i X2:$i Y1:$i Y2:$i",
+        result.x1,result.x2,result.y1,result.y2):
+        return result
+    return result
 
 
 proc parseSRT*(srtData : string): SRTData = 
@@ -93,18 +104,7 @@ proc parseSRT*(srtData : string): SRTData =
         sub.endTime = initTimeInterval(milliseconds = parseInt(sub.endTimeString[9..11]), seconds = parseInt(sub.endTimeString[6..7]),
                                      minutes = parseInt(sub.endTimeString[3..4]), hours = parseInt(sub.endTimeString[0..1]))
         
-        var coords : SRTCoordinates = SRTCoordinates()
-        if len(lines[1]) > 29:
-            coords.x1 = lines[1][33..35]
-            coords.x2 = lines[1][40..42]
-            coords.y1 = lines[1][47..49]
-            coords.y2 = lines[1][54..56]
-        else:
-            coords.x1 = ""
-            coords.x2 = ""
-            coords.y1 = ""
-            coords.y2 = ""
-        sub.coordinates = coords
+        sub.coordinates = parseCoords(lines[1])
         
         sub.text = lines[2..high(lines)].join("\n")
         
@@ -123,3 +123,15 @@ proc readSRT*(filename : string): SRTData =
     ## Reads and parses a file containing SRT data into an ``SRTData`` object.
     
     return parseSRT(readFile(filename))
+
+proc hasCoords(c: SRTCoordinates): bool =
+    if (c.x1 == 0 and c.x2 == 0 and
+        c.y1 == 0 and c.y2 == 0):
+        return false
+    return true
+
+proc `$`*(c: SRTCoordinates): string =
+    ## Returns string of coordinates
+    result = fmt"X1:{c.x1} X2:{c.x2} Y1:{c.y1} Y2:{c.y2}"
+
+
