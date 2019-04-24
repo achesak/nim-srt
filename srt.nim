@@ -109,7 +109,7 @@ proc parseSRT*(srtData : string): SRTData =
         var offset = 0
         if index == 1: # The first line may contain BOM marks which should be skipped when parsing the integer
             offset = find(lines[0],{'0','1','2','3','4','5','6','7','8','9'})
-        var number:string = lines[0][offset..^1]
+        var number: string = lines[0][offset..^1]
         if not number.isDigit():
             # lets assume the content belongs to previous line
             if index == 1: # if this is the first line there is no previous line to append to
@@ -138,24 +138,25 @@ proc readSRT*(filename : string): SRTData =
     ## Reads and parses a file containing SRT data into an ``SRTData`` object.
     return parseSRT(readFile(filename))
 
+
 proc hasCoords(c: SRTCoordinates): bool =
-    if (c.x1 == 0 and c.x2 == 0 and
-        c.y1 == 0 and c.y2 == 0):
-        return false
-    return true
+    return c.x1 == 0 and c.x2 == 0 and c.y1 == 0 and c.y2 == 0
+
 
 proc `$`*(c: SRTCoordinates): string =
     ## Returns string of coordinates
-    result = fmt"X1:{c.x1} X2:{c.x2} Y1:{c.y1} Y2:{c.y2}"
+    return fmt"X1:{c.x1} X2:{c.x2} Y1:{c.y1} Y2:{c.y2}"
+
 
 proc formatTime(t: TimeInterval): string =
     ## Returns string of the time in `HH:mm:ss:fff` format
-    result = fmt"{t.hours:0>2.0}:{t.minutes:0>2.0}:{t.seconds:0>2.0},{t.milliseconds:0>3.0}"
+    return fmt"{t.hours:0>2.0}:{t.minutes:0>2.0}:{t.seconds:0>2.0},{t.milliseconds:0>3.0}"
+
 
 proc `$`*(s: SRTData): string=
     ## Outputs the full SRT file to its intended format
-    result=""
-    var number,index = 0
+    result = ""
+    var number, index = 0
     for subtitle in s.subtitles:
         inc index
         if subtitle.text == "":
