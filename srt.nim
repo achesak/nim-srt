@@ -162,11 +162,15 @@ proc `$`*(s: SRTData): string=
         if subtitle.text == "":
             continue
         inc number
-        result.add(&"{number}\n")
+        if subtitle.number != default(int):
+            result.add(&"{subtitle.number}\n")
+        else: result.add(&"{number}\n")
+
         result.add(fmt"{formatTime(subtitle.startTime)} --> {formatTime(subtitle.endTime)}")
         if hasCoords(subtitle.coordinates):
             result.add(fmt" {subtitle.coordinates}")
         result.add(&"\n{subtitle.text}\n")
         if index != s.subtitles.len:
             result.add("\n")
+
 
