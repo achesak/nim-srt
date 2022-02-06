@@ -50,7 +50,7 @@
 ##     echo("Y1: " & srt.subtitles[0].coordinates.y1) # Output: "Y1: 100"
 
 
-import times
+import times, sugar
 import strutils
 import parseutils
 import strformat
@@ -94,6 +94,7 @@ proc parseCoords(s:string): SRTCoordinates =
         return result
     return result
 
+import sequtils
 
 proc parseSRT*(srtData : string): SRTData =
     ## Parses a string containing SRT data into an ``SRTData`` object.
@@ -105,12 +106,11 @@ proc parseSRT*(srtData : string): SRTData =
         inc index
         var sub : SRTSubtitle = SRTSubtitle()
         var lines : seq[string] = i.strip(leading = true, trailing = true).split("\n")
-
         var offset = 0
         if index == 1: # The first line may contain BOM marks which should be skipped when parsing the integer
             offset = find(lines[0],{'0','1','2','3','4','5','6','7','8','9'})
-        var number: string = lines[0][offset..^1]
-        if not number.isDigit():
+        var number: string = lines[0][offset .. lines[0].len-1]
+        if not number.all(n => isDigit(n)):
             # lets assume the content belongs to previous line
             if index == 1: # if this is the first line there is no previous line to append to
                 continue
@@ -148,7 +148,7 @@ proc `$`*(c: SRTCoordinates): string =
     return fmt"X1:{c.x1} X2:{c.x2} Y1:{c.y1} Y2:{c.y2}"
 
 
-proc formatTime(t: TimeInterval): string =
+proc formatTime*(t: TimeInterval): string =
     ## Returns string of the time in `HH:mm:ss:fff` format
     return fmt"{t.hours:0>2.0}:{t.minutes:0>2.0}:{t.seconds:0>2.0},{t.milliseconds:0>3.0}"
 
@@ -162,7 +162,10 @@ proc `$`*(s: SRTData): string=
         if subtitle.text == "":
             continue
         inc number
-        result.add(&"{number}\n")
+        if subtitle.number != default(int):
+            result.add(&"{subtitle.number}\n")
+        else: result.add(&"{number}\n")
+
         result.add(fmt"{formatTime(subtitle.startTime)} --> {formatTime(subtitle.endTime)}")
         if hasCoords(subtitle.coordinates):
             result.add(fmt" {subtitle.coordinates}")
