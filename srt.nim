@@ -173,3 +173,4 @@ proc `$`*(s: SRTData): string=
         if index != s.subtitles.len:
             result.add("\n")
 
+
